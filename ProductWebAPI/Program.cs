@@ -38,6 +38,9 @@ namespace ProductWebAPI
 
             // Add services
             builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<EmailService>();
+            //builder.Services.AddScoped<IEmailService, EmailService>();
+
 
             // JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

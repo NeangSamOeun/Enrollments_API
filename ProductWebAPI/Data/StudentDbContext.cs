@@ -16,7 +16,7 @@ namespace ProductWebAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // 🧑‍🎓 Student
+            // Student
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.ToTable("Students");
@@ -46,7 +46,7 @@ namespace ProductWebAPI.Data
                       .HasForeignKey(p => p.StudentId);
             });
 
-            // 📚 Course
+            //  Course
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses");
@@ -74,7 +74,7 @@ namespace ProductWebAPI.Data
                       .HasForeignKey(e => e.CourseId);
             });
 
-            // 📝 Enrollment
+            // Enrollment
             modelBuilder.Entity<Enrollment>(entity =>
             {
                 entity.ToTable("Enrollments");
@@ -96,7 +96,7 @@ namespace ProductWebAPI.Data
                       .IsRequired();
             });
 
-            // 💰 Payment
+            // Payment
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.ToTable("Payments");
@@ -117,7 +117,7 @@ namespace ProductWebAPI.Data
                       .IsRequired();
             });
 
-            // 👤 User
+            // User
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
@@ -127,20 +127,30 @@ namespace ProductWebAPI.Data
                       .HasColumnType("varchar(50)")
                       .IsRequired();
 
-                entity.Property(u => u.Username)
+                entity.Property(u => u.Email)
                       .HasColumnType("varchar(50)")
                       .IsRequired();
 
-                entity.HasIndex(u => u.Username).IsUnique();
+                entity.HasIndex(u => u.Email).IsUnique();
 
                 entity.Property(u => u.PasswordHash)
                       .HasColumnType("varchar(255)")
                       .IsRequired();
 
                 entity.Property(u => u.Role)
-                      .HasConversion<string>() // ✅ store enum as string
+                      .HasConversion<string>() // store enum as string
                       .HasColumnType("varchar(50)")
                       .IsRequired();
+
+                // ADD NEW FIELDS FOR OTP
+                entity.Property(u => u.OtpCode)
+                      .HasColumnType("varchar(10)")
+                      .IsRequired(false);
+
+                entity.Property(u => u.OtpExpireTime)
+                      .HasColumnType("datetime")
+                      .IsRequired(false);
+
             });
         }
     }
