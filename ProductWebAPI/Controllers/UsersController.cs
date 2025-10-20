@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductWebAPI.Data;
 using ProductWebAPI.DTOs;
 using ProductWebAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProductWebAPI.Controllers
 {
@@ -24,44 +25,55 @@ namespace ProductWebAPI.Controllers
             return await _context.Users.Select(u => new UserDTOs
             {
                 Id = u.Id,
-                Username = u.Username,
+                Email = u.Email,
                 Role = u.Role.ToString()
             }).ToListAsync();
         }
-
         [HttpPost]
         public async Task<ActionResult<UserDTOs>> CreateUser(CreateUserDTO dto)
         {
-            // check if role is valid
+            // Validate Role
             if (!Enum.TryParse<UserRole>(dto.Role, true, out var role))
             {
                 return BadRequest("Invalid role. Valid roles are: Admin, Staff, Teacher, Student");
             }
 
-            // check if for duplicate username
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == dto.Username.ToLower());
+            // Validate Email Format
+            if (!new EmailAddressAttribute().IsValid(dto.Email))
+            {
+                return BadRequest(new { message = "Invalid email format" });
+            }
+
+            // Check duplicate email
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+
             if (existingUser != null)
             {
-                return BadRequest(new { message = "username already exists" });
+                return BadRequest(new { message = "Email already exists" });
             }
+
+            // Hash password
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var user = new User
             {
-                Username = dto.Username,
-                PasswordHash = dto.Password,
+                Email = dto.Email,
+                PasswordHash = passwordHash,
                 Role = role
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return new UserDTOs
+            return Ok(new UserDTOs
             {
                 Id = user.Id,
-                Username = user.Username,
+                Email = user.Email,
                 Role = user.Role.ToString()
-            };
+            });
         }
+
 
     }
 }
