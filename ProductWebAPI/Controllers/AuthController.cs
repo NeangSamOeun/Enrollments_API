@@ -14,7 +14,6 @@ namespace ProductWebAPI.Controllers
         private readonly StudentDbContext _context;
         private readonly TokenService _tokenService;
         private readonly EmailService _emailService;
-
         public AuthController(StudentDbContext context, TokenService tokenService, EmailService emailService)
         {
             _context = context;
