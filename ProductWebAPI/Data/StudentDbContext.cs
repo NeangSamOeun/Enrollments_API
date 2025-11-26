@@ -13,6 +13,7 @@ namespace ProductWebAPI.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Menu> Menus { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -127,11 +128,23 @@ namespace ProductWebAPI.Data
                       .HasColumnType("varchar(50)")
                       .IsRequired();
 
+                entity.Property(f => f.FirstName)
+                      .HasColumnType("varchar(100)")
+                      .IsRequired();
+
+                entity.Property(l => l.LastName)
+                      .HasColumnType("varchar(100)")
+                      .IsRequired();
+
                 entity.Property(u => u.Email)
                       .HasColumnType("varchar(50)")
                       .IsRequired();
 
                 entity.HasIndex(u => u.Email).IsUnique();
+
+                entity.Property(g => g.Gender)
+                      .HasColumnType("varchar(10)")
+                      .IsRequired();
 
                 entity.Property(u => u.PasswordHash)
                       .HasColumnType("varchar(255)")
@@ -151,6 +164,17 @@ namespace ProductWebAPI.Data
                       .HasColumnType("datetime")
                       .IsRequired(false);
 
+            });
+
+            // Add Menu
+            modelBuilder.Entity<Menu>(entity =>
+            {
+                entity.ToTable("Menus");
+                entity.HasKey(m => m.Id);
+                entity.Property(m => m.Title).HasColumnType("varchar(100)").IsRequired();
+                entity.Property(m => m.Url).HasColumnType("varchar(100)").IsRequired();
+                entity.Property(m => m.Icon).HasColumnType("varchar(50)");
+                entity.Property(m => m.AllowedRoles).HasColumnType("varchar(50)").IsRequired();
             });
         }
     }

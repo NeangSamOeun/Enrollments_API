@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProductWebAPI.Data;
+using ProductWebAPI.Repositories;
 using ProductWebAPI.Services;
 using System.Text;
 
@@ -26,8 +27,6 @@ namespace ProductWebAPI
                 });
             });
 
-
-
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -39,7 +38,12 @@ namespace ProductWebAPI
             // Add services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<EmailService>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
             //builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+            builder.Services.AddScoped<IMenuService, MenuService>();
 
 
             // JWT Authentication
@@ -58,8 +62,6 @@ namespace ProductWebAPI
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                     };
                 });
-
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
