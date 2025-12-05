@@ -12,7 +12,6 @@ namespace ProductWebAPI.Models
         public string CourseName { get; set; } = string.Empty;
         public int Credits { get; set; }
         public decimal Fee { get; set; }
-
         public ICollection<Enrollment> Enrollments { get; set; }
     }
 }
