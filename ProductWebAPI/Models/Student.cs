@@ -12,7 +12,7 @@ namespace ProductWebAPI.Models
         public DateTime DateOfBirth { get; set; }
         public string Email { get; set; } = string.Empty;
 
-        public ICollection<Enrollment> Enrollments { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; } = default!;
+        public ICollection<Payment> Payments { get; set; } = default!;
     }
 }

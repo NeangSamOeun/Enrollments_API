@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ProductWebAPI.Data;
 using ProductWebAPI.Repositories;
 using ProductWebAPI.Services;
@@ -44,6 +45,12 @@ namespace ProductWebAPI
             //builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IMenuRepository, MenuRepository>();
             builder.Services.AddScoped<IMenuService, MenuService>();
+            builder.Services.AddScoped<IStudentEnrollmentRepository, StudentEnrollmentRepository>();
+            builder.Services.AddScoped<IStudentEnrollmentService, StudentEnrollmentService>();
+            // major
+            builder.Services.AddScoped<IMajorRepository, MajorRepository>();
+            builder.Services.AddScoped<IMajorService, MajorService>();
+
 
 
             // JWT Authentication
@@ -66,8 +73,46 @@ namespace ProductWebAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            #region configure Swagger for JWT authorization
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Student Enrollment API", Version = "v1" });
+
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                };
+                c.AddSecurityDefinition("Bearer", securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+            #endregion
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
 
             var app = builder.Build();
+            // Use global exception handling middleware
+            app.UseGlobalExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -79,6 +124,7 @@ namespace ProductWebAPI
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

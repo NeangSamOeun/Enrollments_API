@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductWebAPI.Data;
 
@@ -11,9 +12,11 @@ using ProductWebAPI.Data;
 namespace ProductWebAPI.Migrations
 {
     [DbContext(typeof(StudentDbContext))]
-    partial class StudentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127133916_UpdateStudent_AddCodeAndAutoId")]
+    partial class UpdateStudent_AddCodeAndAutoId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,10 +281,6 @@ namespace ProductWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegisterId"));
 
-                    b.Property<string>("Batch")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
                     b.Property<int>("MajorId")
                         .HasColumnType("int");
 
@@ -337,6 +336,7 @@ namespace ProductWebAPI.Migrations
             modelBuilder.Entity("ProductWebAPI.Models.StudentERM", b =>
                 {
                     b.Property<string>("StudentId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("Code")
