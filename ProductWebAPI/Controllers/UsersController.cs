@@ -25,6 +25,14 @@ namespace ProductWebAPI.Controllers
             return Ok(new { results = result});
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            var user = await _service.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+            return Ok(user);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserDTO dto)
         {
@@ -35,6 +43,28 @@ namespace ProductWebAPI.Controllers
                 return BadRequest(new { message = result.message });
             return Ok(new { message = result.message }); // create success
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var result = await _service.DeleteUserAsync(id);
+            if (!result.success)
+                return NotFound(result.message);
+
+            return Ok(result.message);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, UpdateUserDto dto)
+        {
+            var user = await _service.UpdateUserAsync(id, dto);
+            if (user == null)
+                return NotFound("User not found");
+
+            return Ok(user);
+        }
+
+
 
     }
 }

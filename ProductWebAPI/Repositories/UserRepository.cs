@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductWebAPI.Data;
-using ProductWebAPI.DTOs;
 using ProductWebAPI.Models;
 
 namespace ProductWebAPI.Repositories
@@ -11,13 +10,17 @@ namespace ProductWebAPI.Repositories
 
         public UserRepository(StudentDbContext dbContext)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
         public IQueryable<User> GetUsers()
         {
-            var users = _dbContext.Users.AsQueryable();
-            return users;
+            return _dbContext.Users.AsNoTracking();
+        }
+
+        public async Task<User?> GetUserByIdAsync(string id)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> AddUserAsync(User user)
@@ -25,6 +28,33 @@ namespace ProductWebAPI.Repositories
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
             return user;
+        }
+
+        public async Task<User?> UpdateUserAsync(string id, User user)
+        {
+            var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (existingUser == null)
+                return null;
+
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.Email = user.Email;
+            existingUser.Role = user.Role;
+            existingUser.Gender = user.Gender;
+
+            await _dbContext.SaveChangesAsync();
+            return existingUser;
+        }
+
+        public async Task<bool> DeleteUserAsync(string id)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+                return false;
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

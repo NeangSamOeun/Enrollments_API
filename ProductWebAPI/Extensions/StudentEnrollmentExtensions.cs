@@ -64,7 +64,7 @@ public static class StudentEnrollmentExtensions
             RegisterDate = dto.RegisterDate,
             RegisterType = dto.RegisterType,
             Status = dto.Status,
-            Batch = dto.Batch
+            BatchId = dto.BatchId
         };
 
     public static StudentERMDTO ToDto(this StudentERM erm)

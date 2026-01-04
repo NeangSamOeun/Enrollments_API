@@ -18,8 +18,8 @@ namespace ProductWebAPI.Data
         public DbSet<PermanentAddress> PermanentAddresses { get; set; }
         public DbSet<ContactInformation> ContactInformations { get; set; }
         public DbSet<Majors> Majors { get; set; }
-        public DbSet<Subjects> Subjects { get; set; }
         public DbSet<RegisterInformation> RegisterInformations { get; set; }
+        public DbSet<Batch> Batches { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -209,11 +209,10 @@ namespace ProductWebAPI.Data
                 entity.Property(r => r.RegisterId).HasColumnType("int").IsRequired(); // PK
                 entity.Property(r => r.StudentId).HasColumnType("varchar(50)").IsRequired(); // match Student.Id
                 entity.Property(r => r.MajorId).HasColumnType("int").IsRequired();
+                entity.Property(r => r.BatchId).HasColumnType("int").IsRequired();
                 entity.Property(r => r.RegisterDate).HasColumnType("datetime").IsRequired();
                 entity.Property(r => r.RegisterType).HasColumnType("varchar(50)").IsRequired();
                 entity.Property(r => r.Status).HasColumnType("varchar(50)").IsRequired();
-                entity.Property(r => r.Batch).HasColumnType("varchar(50)").IsRequired();
-
 
                 entity.HasOne(r => r.Student)
                       .WithMany(s => s.RegisterInformations)
@@ -223,6 +222,11 @@ namespace ProductWebAPI.Data
                 entity.HasOne(r => r.Major)
                       .WithMany(m => m.RegisterInformations)
                       .HasForeignKey(r => r.MajorId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(r => r.Batchs)
+                      .WithMany(b => b.RegisterInformation)
+                      .HasForeignKey(r => r.BatchId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -234,19 +238,18 @@ namespace ProductWebAPI.Data
                 entity.Property(m => m.MajorName).HasColumnType("varchar(100)").IsRequired();
             });
 
-            // Subjects entity configuration
-            modelBuilder.Entity<Subjects>(entity =>
+            // batch entity configuration 
+            modelBuilder.Entity<Batch>(entity =>
             {
-                entity.ToTable("Subjects");
-                entity.HasKey(s => s.SubjectId);
-                entity.Property(s => s.MajorId).HasColumnType("int").IsRequired();
-                entity.Property(s => s.SubjectName).HasColumnType("varchar(100)").IsRequired();
-                // relationship table
-                entity.HasOne(s => s.Major)
-                        .WithMany(m => m.Subjects)
-                        .HasForeignKey(s => s.MajorId)
-                        .OnDelete(DeleteBehavior.Cascade);
+                entity.ToTable("Batch");
+                entity.HasKey(b => b.BatchId);
+                entity.Property(b => b.BatchId)
+                      .ValueGeneratedOnAdd(); // important for identity
+                entity.Property(b => b.BatchName)
+                      .HasColumnType("varchar(50)")
+                      .IsRequired();
             });
+
         }
     }
 }

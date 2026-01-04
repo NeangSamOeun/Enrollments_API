@@ -13,6 +13,6 @@
         public string? Major { get; set; } = default!;
         public string? Status { get; set; } = default!;
         public int? BacIIYear { get; set; }
-        public string? Batch { get; set; }
+        public int? BatchId { get; set; }
     }
 }

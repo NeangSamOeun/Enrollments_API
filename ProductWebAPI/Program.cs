@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using ProductWebAPI.Data;
 using ProductWebAPI.Repositories;
 using ProductWebAPI.Services;
@@ -15,7 +16,6 @@ namespace ProductWebAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // ✅ Add CORS policy
             builder.Services.AddCors(options =>
             {
@@ -27,6 +27,7 @@ namespace ProductWebAPI
                           .AllowCredentials(); // if you use cookies or auth headers
                 });
             });
+
 
             // Add services to the container.
 
@@ -50,6 +51,14 @@ namespace ProductWebAPI
             // major
             builder.Services.AddScoped<IMajorRepository, MajorRepository>();
             builder.Services.AddScoped<IMajorService, MajorService>();
+            // Batch
+            builder.Services.AddScoped<IBatchRepository, BatchRepository>();
+            builder.Services.AddScoped<IBatchService, BatchService>();
+            // Dashboard
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+
 
 
 

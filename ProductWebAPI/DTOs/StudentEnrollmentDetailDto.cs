@@ -46,5 +46,6 @@
         public string? RegisterType { get; set; }
         public string? Status { get; set; }
         public string? Batch { get; set; }
+        public int? BatchId { get; set; }
     }
 }

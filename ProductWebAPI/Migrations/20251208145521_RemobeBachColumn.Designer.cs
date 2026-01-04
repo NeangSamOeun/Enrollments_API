@@ -12,8 +12,8 @@ using ProductWebAPI.Data;
 namespace ProductWebAPI.Migrations
 {
     [DbContext(typeof(StudentDbContext))]
-    [Migration("20251204025920_AddBatchField")]
-    partial class AddBatchField
+    [Migration("20251208145521_RemobeBachColumn")]
+    partial class RemobeBachColumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace ProductWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ProductWebAPI.Models.Batch", b =>
+                {
+                    b.Property<int>("BatchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchId"));
+
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("BatchId");
+
+                    b.ToTable("Batch", (string)null);
+                });
 
             modelBuilder.Entity("ProductWebAPI.Models.ContactInformation", b =>
                 {
@@ -281,9 +298,8 @@ namespace ProductWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegisterId"));
 
-                    b.Property<string>("Batch")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int");
 
                     b.Property<int>("MajorId")
                         .HasColumnType("int");
@@ -304,6 +320,8 @@ namespace ProductWebAPI.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("RegisterId");
+
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("MajorId");
 
@@ -380,28 +398,6 @@ namespace ProductWebAPI.Migrations
                     b.HasKey("StudentId");
 
                     b.ToTable("StudentEnrollment", (string)null);
-                });
-
-            modelBuilder.Entity("ProductWebAPI.Models.Subjects", b =>
-                {
-                    b.Property<int>("SubjectId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"));
-
-                    b.Property<int>("MajorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SubjectName")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("SubjectId");
-
-                    b.HasIndex("MajorId");
-
-                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("ProductWebAPI.Models.User", b =>
@@ -515,6 +511,12 @@ namespace ProductWebAPI.Migrations
 
             modelBuilder.Entity("ProductWebAPI.Models.RegisterInformation", b =>
                 {
+                    b.HasOne("ProductWebAPI.Models.Batch", "Batchs")
+                        .WithMany("RegisterInformation")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ProductWebAPI.Models.Majors", "Major")
                         .WithMany("RegisterInformations")
                         .HasForeignKey("MajorId")
@@ -527,20 +529,16 @@ namespace ProductWebAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Batchs");
+
                     b.Navigation("Major");
 
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("ProductWebAPI.Models.Subjects", b =>
+            modelBuilder.Entity("ProductWebAPI.Models.Batch", b =>
                 {
-                    b.HasOne("ProductWebAPI.Models.Majors", "Major")
-                        .WithMany("Subjects")
-                        .HasForeignKey("MajorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Major");
+                    b.Navigation("RegisterInformation");
                 });
 
             modelBuilder.Entity("ProductWebAPI.Models.Course", b =>
@@ -551,8 +549,6 @@ namespace ProductWebAPI.Migrations
             modelBuilder.Entity("ProductWebAPI.Models.Majors", b =>
                 {
                     b.Navigation("RegisterInformations");
-
-                    b.Navigation("Subjects");
                 });
 
             modelBuilder.Entity("ProductWebAPI.Models.Student", b =>

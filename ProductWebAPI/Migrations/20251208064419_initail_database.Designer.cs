@@ -12,8 +12,8 @@ using ProductWebAPI.Data;
 namespace ProductWebAPI.Migrations
 {
     [DbContext(typeof(StudentDbContext))]
-    [Migration("20251127133916_UpdateStudent_AddCodeAndAutoId")]
-    partial class UpdateStudent_AddCodeAndAutoId
+    [Migration("20251208064419_initail_database")]
+    partial class initail_database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace ProductWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ProductWebAPI.Models.Batch", b =>
+                {
+                    b.Property<int>("BatchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchId"));
+
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("BatchId");
+
+                    b.ToTable("Batch", (string)null);
+                });
 
             modelBuilder.Entity("ProductWebAPI.Models.ContactInformation", b =>
                 {
@@ -281,6 +298,13 @@ namespace ProductWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegisterId"));
 
+                    b.Property<string>("Batch")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MajorId")
                         .HasColumnType("int");
 
@@ -300,6 +324,8 @@ namespace ProductWebAPI.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("RegisterId");
+
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("MajorId");
 
@@ -336,7 +362,6 @@ namespace ProductWebAPI.Migrations
             modelBuilder.Entity("ProductWebAPI.Models.StudentERM", b =>
                 {
                     b.Property<string>("StudentId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("Code")
@@ -512,6 +537,12 @@ namespace ProductWebAPI.Migrations
 
             modelBuilder.Entity("ProductWebAPI.Models.RegisterInformation", b =>
                 {
+                    b.HasOne("ProductWebAPI.Models.Batch", "Batchs")
+                        .WithMany("RegisterInformation")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ProductWebAPI.Models.Majors", "Major")
                         .WithMany("RegisterInformations")
                         .HasForeignKey("MajorId")
@@ -523,6 +554,8 @@ namespace ProductWebAPI.Migrations
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Batchs");
 
                     b.Navigation("Major");
 
@@ -538,6 +571,11 @@ namespace ProductWebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Major");
+                });
+
+            modelBuilder.Entity("ProductWebAPI.Models.Batch", b =>
+                {
+                    b.Navigation("RegisterInformation");
                 });
 
             modelBuilder.Entity("ProductWebAPI.Models.Course", b =>
