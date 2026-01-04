@@ -77,7 +77,8 @@ namespace ProductWebAPI.DTOs
         public string RegisterType { get; set; } = default!;
         [NonEmptyTrimmed, StringLength(50)]
         public string Status { get; set; } = default!;
-        [NonEmptyTrimmed, StringLength(50)]
-        public string Batch { get; set; } = default!;
+        [Required]
+        public int BatchId { get; set; }
+
     }
 }

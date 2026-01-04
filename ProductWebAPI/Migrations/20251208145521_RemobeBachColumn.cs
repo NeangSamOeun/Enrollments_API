@@ -5,10 +5,18 @@
 namespace ProductWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBatchField : Migration
+    public partial class RemobeBachColumn : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "Batch",
+                table: "RegisterInformation");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
                 name: "Batch",
@@ -16,14 +24,6 @@ namespace ProductWebAPI.Migrations
                 type: "varchar(50)",
                 nullable: false,
                 defaultValue: "");
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "Batch",
-                table: "RegisterInformation");
         }
     }
 }

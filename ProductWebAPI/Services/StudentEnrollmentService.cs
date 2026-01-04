@@ -28,12 +28,16 @@ namespace ProductWebAPI.Services
             return getDetails;
          }
 
+        public async Task<StudentERM?> GetByIdAsync(string studentId)
+        {
+            return await _repo.GetByIdAsync(studentId);
+        }
+
         public async Task<List<StudentERMDTO>> GetAllAsync()
         {
             var results = await _repo.GetAllAsync();
             return results.Select(r => r.ToDto()).ToList();
         }
-
         public async Task<string> CreateEnrollmentAsync(StudentEnrollmentDto dto)
         {
             var existingCode = await _repo.ExistsCodeAsync(dto.Code);
@@ -52,10 +56,25 @@ namespace ProductWebAPI.Services
             var EnrolledStudent = await _repo.CreateStudentEnrollmentAsync(
                 erm, edu, address, contact, register
             );
-
             return EnrolledStudent;
-        }                            
-                 
-    }                                              
+        }
+        // update student
+        public async Task<bool> UpdateStudentPartialAsync(StudentEnrollmentPatchDto dto)
+        {
+            return await _repo.UpdateStudentPartialAsync(dto);
+        }
+        // delete student 
+        public async Task<bool> DeleteStudentAsync(string studentId)
+        {
+            return await _repo.DeleteStudentAsync(studentId);
+        }
+        public async Task<bool> UpdateStatusAsync(UpdateStatusDto dto)
+        {
+            return await _repo.UpdateStatusAsync(dto.StudentId, dto.Status);
+        }
+
+
+
+    }
 }                       
                                             
